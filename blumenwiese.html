@@ -1,0 +1,750 @@
+<!-- Öffne die Datei im Browser. -->
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Für dich 🌷</title>
+  <style>
+    :root {
+      --bg: #b6dca9;
+      --bg-soft: #a5d297;
+      --card: rgba(255, 255, 255, 0.82);
+      --line: #dbe8d9;
+      --text: #24342b;
+      --muted: #5f7467;
+      --accent: #7db58b;
+      --shadow: 0 16px 34px rgba(34, 60, 44, 0.1);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 650px at 18% 0%, rgba(230, 250, 220, 0.35) 0%, transparent 58%),
+        radial-gradient(900px 560px at 90% 6%, rgba(200, 236, 190, 0.26) 0%, transparent 65%),
+        linear-gradient(180deg, #b8dda9 0%, #abd59a 38%, #99ca86 100%);
+      padding: 26px 14px 36px;
+    }
+
+    .wrap {
+      width: min(980px, 100%);
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin: 8px 0 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 4.8vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: clamp(0.96rem, 2.9vw, 1.05rem);
+    }
+
+    .meadow {
+      position: relative;
+      border-radius: 0;
+      background: inherit;
+      box-shadow: none;
+      padding: 0;
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    .meadow::before {
+      content: none;
+    }
+
+    .flowers {
+      position: relative;
+      width: 100%;
+      height: clamp(360px, 56vw, 530px);
+    }
+
+    .flower-btn {
+      appearance: none;
+      border: none;
+      border-radius: 14px;
+      background: transparent;
+      box-shadow: none;
+      width: 112px;
+      height: 136px;
+      padding: 0;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+      transition: filter 160ms ease;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .flower-btn:hover {
+      filter: saturate(1.05);
+    }
+
+    .flower-btn:focus-visible {
+      outline: 2px solid rgba(76, 130, 90, 0.65);
+      outline-offset: 2px;
+    }
+
+    .mini-flower {
+      position: relative;
+      width: 78px;
+      height: 104px;
+      display: block;
+      filter: drop-shadow(0 7px 9px rgba(69, 98, 78, 0.17));
+      transform: rotate(var(--tilt, 0deg));
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .flower-btn:hover .mini-flower {
+      transform: rotate(var(--tilt, 0deg)) translateY(-1px) scale(1.04);
+      filter: drop-shadow(0 10px 13px rgba(69, 98, 78, 0.2));
+    }
+
+    .flower-btn:active .mini-flower {
+      transform: rotate(var(--tilt, 0deg)) scale(0.98);
+    }
+
+    .mf-stem {
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 8px;
+      height: 38px;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #93cb8f, #5ea769);
+      opacity: 0.95;
+    }
+
+    .mf-leaf {
+      position: absolute;
+      bottom: 15px;
+      width: 16px;
+      height: 10px;
+      border-radius: 80% 20% 80% 20%;
+      background: linear-gradient(135deg, #9ad590, #63ad6f);
+      opacity: 0.86;
+    }
+
+    .mf-leaf.left {
+      left: 25px;
+      transform: rotate(-24deg);
+    }
+
+    .mf-leaf.right {
+      right: 25px;
+      transform: rotate(22deg) scaleX(-1);
+    }
+
+    .mf-petal {
+      position: absolute;
+      left: 50%;
+      top: 38px;
+      width: 23px;
+      height: 30px;
+      border-radius: 66% 66% 44% 44%;
+      transform-origin: 50% 102%;
+      transform: translate(-50%, var(--petal-shift, -78%)) rotate(var(--a, 0deg));
+      background: radial-gradient(120% 100% at 50% 18%, var(--petal-light, #ffe4ef), var(--petal-mid, #ffc4d8) 54%, var(--petal-dark, #ff93b8));
+      box-shadow: inset 0 -1px 4px rgba(255, 255, 255, 0.44);
+    }
+
+    .mf-core {
+      position: absolute;
+      left: 50%;
+      top: 37px;
+      width: 21px;
+      height: 21px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: radial-gradient(circle at 40% 36%, #fff3be, #ffd468 58%, #efb53a 100%);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    }
+
+    .mini-flower.type-0 .mf-petal {
+      --petal-light: #ffe6ef;
+      --petal-mid: #ffc3d7;
+      --petal-dark: #f68db1;
+      width: 20px;
+      height: 24px;
+      --petal-shift: -78%;
+    }
+
+    .mini-flower.type-1 .mf-petal {
+      --petal-light: #fff8fa;
+      --petal-mid: #ffd5de;
+      --petal-dark: #de5d6d;
+      width: 20px;
+      height: 29px;
+      border-radius: 60% 60% 34% 34%;
+      --petal-shift: -82%;
+    }
+
+    .mini-flower.type-2 .mf-petal {
+      --petal-light: #ffe2e9;
+      --petal-mid: #ff9eb9;
+      --petal-dark: #e6688f;
+      width: 25px;
+      height: 34px;
+      border-radius: 64% 64% 26% 26%;
+      --petal-shift: -66%;
+    }
+
+    .mini-flower.type-1 .mf-stem {
+      background: linear-gradient(180deg, #8cc7c8, #4f9ba3);
+    }
+
+    .mini-flower.type-2 .mf-stem {
+      width: 9px;
+      height: 50px;
+      bottom: 5px;
+      background: linear-gradient(180deg, #9ccf7b, #68ab5c);
+    }
+
+    .mini-flower.type-2 .mf-stem::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -7px;
+      width: 18px;
+      height: 12px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 42% 42%;
+      background: linear-gradient(180deg, #8ecb74, #65a85c);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .mini-flower.type-2 .mf-core {
+      width: 0;
+      height: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .mini-flower.type-1 .mf-core {
+      width: 19px;
+      height: 19px;
+      background: radial-gradient(circle at 40% 36%, #fffafc, #ffe2e8 58%, #f09aa8 100%);
+    }
+
+    .mini-flower.type-1 .mf-leaf {
+      background: linear-gradient(135deg, #91c9b4, #5aa391);
+    }
+
+    .mini-flower.type-2 .mf-leaf {
+      background: linear-gradient(135deg, #90ca8a, #5fa667);
+      bottom: 18px;
+    }
+
+    .mini-flower.type-2 .mf-leaf.left {
+      transform: rotate(-28deg);
+    }
+
+    .mini-flower.type-2 .mf-leaf.right {
+      transform: rotate(26deg) scaleX(-1);
+    }
+
+    .mini-flower.type-2 .mf-petal:nth-of-type(4),
+    .mini-flower.type-2 .mf-petal:nth-of-type(5),
+    .mini-flower.type-2 .mf-petal:nth-of-type(6) {
+      top: 43px;
+      height: 30px;
+    }
+
+    footer {
+      text-align: center;
+      margin: 22px auto 0;
+      color: #2d3f34;
+    }
+
+    .final-line {
+      margin: 0;
+      line-height: 1.45;
+      font-size: clamp(1rem, 3vw, 1.18rem);
+      font-weight: 600;
+    }
+
+    .final-sub {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: clamp(0.86rem, 2.5vw, 0.94rem);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 26, 20, 0.42);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 220ms ease, visibility 220ms ease;
+      z-index: 20;
+    }
+
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .dialog {
+      width: min(560px, 100%);
+      background: #fff;
+      border: 1px solid #e3ece1;
+      border-radius: 20px;
+      box-shadow: 0 22px 48px rgba(23, 44, 33, 0.2);
+      padding: 18px 16px 16px;
+      transform: translateY(16px) scale(0.98);
+      opacity: 0;
+      transition: transform 240ms ease, opacity 240ms ease;
+      position: relative;
+    }
+
+    .overlay.open .dialog {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #dbe7d7;
+      background: #fff;
+      color: #4a6151;
+      font-size: 1.15rem;
+      cursor: pointer;
+    }
+
+    .dialog h2 {
+      margin: 4px 36px 10px 4px;
+      font-size: 1.12rem;
+      color: #3f5849;
+    }
+
+    .dialog p {
+      margin: 0 4px 14px;
+      line-height: 1.5;
+      font-size: 1.05rem;
+    }
+
+    .meme {
+      margin: 0 4px;
+      border: 1px dashed #cfe0cd;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #f7fbf6, #eff7ee);
+      padding: 12px 10px 10px;
+      text-align: center;
+    }
+
+    .meme-gif {
+      display: block;
+      width: min(100%, 360px);
+      margin: 0 auto;
+      border-radius: 12px;
+      border: 1px solid rgba(221, 234, 217, 0.9);
+      box-shadow: 0 10px 20px rgba(64, 93, 72, 0.1);
+      background: #f4faf2;
+    }
+
+    @media (min-width: 430px) {
+      .flowers { height: clamp(390px, 54vw, 560px); }
+    }
+
+    @media (min-width: 760px) {
+      .flowers { height: clamp(430px, 52vw, 620px); }
+      .flower-btn { width: 120px; height: 142px; }
+      .mini-flower { width: 84px; height: 110px; }
+      .meadow { padding: 14px; }
+    }
+
+    @media (min-width: 1040px) {
+      .flowers { height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Alinas Blumenwiese</h1>
+      <p class="subtitle">Hinter jeder Blume steckt ein kleiner Gedanke für dich.</p>
+    </header>
+
+    <section class="meadow" aria-label="Blumenwiese">
+      <div class="flowers" id="flowers"></div>
+    </section>
+
+    <footer>
+      <p class="final-line">23 kleine Dinge.<br>Und ich bin gespannt, was noch dazukommt.</p>
+      <p class="final-sub">Blumen sind nett. Aber ich dachte, du bekommst gleich eine ganze Wiese. 🌼</p>
+    </footer>
+  </div>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <button class="close" id="closeBtn" aria-label="Schließen">✕</button>
+      <h2 id="dialogTitle">Eine Blume sagt:</h2>
+      <p id="dialogText"></p>
+      <div class="meme" aria-label="Lustiges Meme">
+        <img class="meme-gif" id="memeGif" alt="">
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const messages = [
+      "Für deine 2-Stunden-Runs 🏃‍♀️",
+      "Für dein „I can do hard things“. 💪",
+      "Für deine Energie, wenn du von etwas begeistert bist ⚡️",
+      "Für dein Lächeln, selbst wenn du eigentlich müde bist 🥰",
+      "Für dein Aussehen, das mich komplett aus dem Konzept bringt 😵‍💫",
+      "Dein Lächeln und Humor",
+      "Für die Ruhe die du mir bringst",
+      "Für dein Flüstern in manchen Situationen 🤍",
+      "Für die Art, wie du Dinge erzählst 🎙️",
+      "Für deinen Ehrgeiz und deine Neugier 👀",
+      "Für dein warmes Lachen 🌼",
+      "Für Matcha-im-Bett-Träume ☕️🛌",
+      "Für jedes Snoozen am Morgen 😴✨",
+      "Für die Art, wie du küsst und alles kurz still wird ❤️",
+      "Für Spa-Wochenenden, die sich mit dir wie Urlaub anfühlen ☁️",
+      "Für Podcast-Empfehlungen 🎧",
+      "Für spontane kleine Abenteuer 🗺️",
+      "Für die Art, wie mit dir selbst Kleines besonders wird",
+      "Für dein „entspannt, aber nicht egal“. 🌙",
+      "Für jedes Kuscheln",
+      "Für deine Lieblingszahl 23 🔢",
+      "Die Unterstützung wirst du immer bekommen",
+      "Für das, was noch kommt 🙂"
+    ];
+
+    const rotations = [-8, 5, -4, 6, -7, 4, -5, 3, -6, 7, -3, 4, -5, 6, -4, 5, -7, 3, -6, 4, -5, 6, -4];
+    const flowerTypes = [0, 1, 2, 0, 2, 1, 0, 1, 2, 0, 1, 2, 2, 0, 1, 0, 2, 1, 0, 1, 2, 0, 2];
+    const memeScenes = [
+      {
+        src: "https://media.giphy.com/media/H7wDWXvJhjtkn6QURb/giphy.gif",
+        alt: "Olympisches Lauf-GIF fuer den Run-Text"
+      },
+      {
+        src: "https://media.giphy.com/media/gIZJ3nFBDfnz2jr5b0/giphy.gif",
+        alt: "Jemand klatscht begeistert"
+      },
+      {
+        src: "https://media.giphy.com/media/gromG2nn1K3Tg50ojX/giphy.gif",
+        alt: "Taylor Swift ist begeistert"
+      },
+      {
+        src: "https://media.giphy.com/media/3Hyo41gZh6wpmqBVmz/giphy.gif",
+        alt: "Mueder Hase laechelt trotzdem suess"
+      },
+      {
+        src: "https://media.giphy.com/media/Laa7FjQL21kgo/giphy.gif",
+        alt: "Aufgeregter Blick wie komplett aus dem Konzept gebracht"
+      },
+      {
+        src: "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
+        alt: "Katze zeigt liebevolle Zuneigung"
+      },
+      {
+        src: "https://media.giphy.com/media/qei7zeYhBu3zW/giphy.gif",
+        alt: "Zwei Tiere kuscheln ruhig"
+      },
+      {
+        src: "https://media.giphy.com/media/hDHIX9BSJ4mTujIVSe/giphy.gif",
+        alt: "Jemand fluestert etwas ins Ohr"
+      },
+      {
+        src: "https://media.giphy.com/media/3ohze16sts2jPMKV4Q/giphy.gif",
+        alt: "Jemand erzaehlt lebhaft"
+      },
+      {
+        src: "https://media.giphy.com/media/3ohzdYaGiuMQyJJUgo/giphy.gif",
+        alt: "Jemand schaut neugierig und aufmerksam"
+      },
+      {
+        src: "https://media.giphy.com/media/mVFwgopG0xJ2BGBtb6/giphy.gif",
+        alt: "Jemand laechelt herzlich"
+      },
+      {
+        src: "https://media.giphy.com/media/gcVJ7rAoMi3KvFUzDb/giphy.gif",
+        alt: "Jemand geniesst ein Getraenk im Bett"
+      },
+      {
+        src: "https://media.giphy.com/media/UiedAqB76nife/giphy.gif",
+        alt: "Jemand snoozt am Morgen weiter"
+      },
+      {
+        src: "https://media.giphy.com/media/twsX7xsuU2NPyz1bXV/giphy.gif",
+        alt: "Romantischer Kuss-Moment"
+      },
+      {
+        src: "https://media.giphy.com/media/812LmrydjczZHYvjCF/giphy.gif",
+        alt: "Entspannter Spa-Moment"
+      },
+      {
+        src: "https://images.podigee-cdn.net/1400x,sx5t6JOIF5cduXD3namncdxP60X74k6n3pXLh1TmFq7s=/https://main.podigee-cdn.net/uploads/u5851/c87dba70-7656-4175-9f61-6cf724214810.jpg",
+        alt: "Fast and Curious Podcast Cover"
+      },
+      {
+        src: "https://media.giphy.com/media/h2CQERHJIU4m8v7mbH/giphy.gif",
+        alt: "Leute fahren gluecklich auf einem Roadtrip"
+      },
+      {
+        src: "https://media.giphy.com/media/2sXMMkHjTUgikotsYI/giphy.gif",
+        alt: "Herzliche Umarmung, die einen kleinen Moment besonders macht"
+      },
+      {
+        src: "https://media.giphy.com/media/UGW4J7lba8gvwXjWA9/giphy.gif",
+        alt: "Entspannte Figur chillt gelassen"
+      },
+      {
+        src: "https://media.giphy.com/media/h4BprYiFYNxRe/giphy.gif",
+        alt: "Zwei Tiere kuscheln liebevoll"
+      },
+      {
+        src: "https://media.giphy.com/media/pS1vUsEEiHagM/giphy.gif",
+        alt: "Miley Cyrus 23 GIF"
+      },
+      {
+        src: "https://media.giphy.com/media/12XDYvMJNcmLgQ/giphy.gif",
+        alt: "Jemand zeigt Unterstuetzung und feuert an"
+      },
+      {
+        src: "https://media.giphy.com/media/STc0EEdaNTDgCjP7gG/giphy.gif",
+        alt: "Eine Blume waechst und blueht auf"
+      }
+    ];
+
+    const meadowEl = document.querySelector(".meadow");
+    const flowersEl = document.getElementById("flowers");
+    const overlay = document.getElementById("overlay");
+    const closeBtn = document.getElementById("closeBtn");
+    const dialogText = document.getElementById("dialogText");
+    const memeGif = document.getElementById("memeGif");
+    const flowersState = [];
+    const pointer = { x: 0, y: 0 };
+    let pointerActive = false;
+    let lastFocused = null;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function createFlowerSlots(count, viewportWidth) {
+      const cols = viewportWidth >= 1040 ? 7 : viewportWidth >= 760 ? 6 : viewportWidth >= 430 ? 4 : 3;
+      const rows = Math.ceil(count / cols);
+      const slots = [];
+      const basePerRow = Math.floor(count / rows);
+      const remainder = count % rows;
+
+      for (let row = 0; row < rows; row++) {
+        const itemsInRow = basePerRow + (row < remainder ? 1 : 0);
+        const yBase = rows === 1 ? 52 : 16 + (row / (rows - 1)) * 70;
+        const rowSpread = itemsInRow === 1 ? 0 : 82 / (itemsInRow - 1);
+        const rowInset = 9 + (cols - itemsInRow) * 3.1;
+        const stagger = row % 2 === 0 ? 0 : Math.min(5.5, rowSpread * 0.18);
+
+        for (let col = 0; col < itemsInRow; col++) {
+          const waveX = ((row * 1.7 + col * 2.3) % 5) - 2;
+          const waveY = ((row * 2.1 + col * 1.4) % 4) - 1.5;
+          const x = clamp(rowInset + col * rowSpread + stagger + waveX * 0.9, 7, 93);
+          const y = clamp(yBase + waveY * 2.1, 14, 91);
+          slots.push({ x, y });
+        }
+      }
+
+      return slots;
+    }
+
+    function makeFlowerMarkup(index) {
+      const type = flowerTypes[index % flowerTypes.length];
+      const petals = type === 0 ? 8 : type === 1 ? 13 : 3;
+      const flower = document.createElement("span");
+      flower.className = `mini-flower type-${type}`;
+      flower.setAttribute("aria-hidden", "true");
+      flower.style.setProperty("--tilt", `${rotations[index] * 0.45}deg`);
+
+      const stem = document.createElement("span");
+      stem.className = "mf-stem";
+      flower.appendChild(stem);
+
+      const leafLeft = document.createElement("span");
+      leafLeft.className = "mf-leaf left";
+      flower.appendChild(leafLeft);
+
+      const leafRight = document.createElement("span");
+      leafRight.className = "mf-leaf right";
+      flower.appendChild(leafRight);
+
+      for (let i = 0; i < petals; i++) {
+        const petal = document.createElement("span");
+        petal.className = "mf-petal";
+        if (type === 2) {
+          const tulipAngles = [-26, 0, 26];
+          petal.style.setProperty("--a", `${tulipAngles[i] || 0}deg`);
+          petal.style.zIndex = String(i === 1 ? 2 : 1);
+        } else {
+          petal.style.setProperty("--a", `${(360 / petals) * i}deg`);
+        }
+        flower.appendChild(petal);
+      }
+
+      const core = document.createElement("span");
+      core.className = "mf-core";
+      flower.appendChild(core);
+
+      return flower;
+    }
+
+    function mountFlowers() {
+      messages.forEach((_, i) => {
+        const button = document.createElement("button");
+        button.className = "flower-btn";
+        button.type = "button";
+        button.setAttribute("aria-label", `Blume ${i + 1} öffnen`);
+        button.style.setProperty("--rot", `${rotations[i]}deg`);
+        button.appendChild(makeFlowerMarkup(i));
+        button.addEventListener("click", () => openDialog(i));
+        flowersEl.appendChild(button);
+
+        flowersState.push({
+          el: button,
+          baseRot: rotations[i],
+          xPct: 50,
+          yPct: 50,
+          pushX: 0,
+          pushY: 0,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.62 + Math.random() * 0.52,
+          ampX: 1.6 + Math.random() * 2.8,
+          ampY: 1.2 + Math.random() * 2.1
+        });
+      });
+
+      layoutFlowers();
+    }
+
+    function layoutFlowers() {
+      const slots = createFlowerSlots(flowersState.length, window.innerWidth);
+      flowersState.forEach((flower, i) => {
+        const slot = slots[i];
+        flower.xPct = slot.x;
+        flower.yPct = slot.y;
+        flower.el.style.left = `${slot.x}%`;
+        flower.el.style.top = `${slot.y}%`;
+      });
+    }
+
+    function updatePointer(event) {
+      const rect = flowersEl.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+      pointerActive =
+        pointer.x >= 0 &&
+        pointer.y >= 0 &&
+        pointer.x <= rect.width &&
+        pointer.y <= rect.height;
+    }
+
+    function animateFlowers(timestamp) {
+      const rect = flowersEl.getBoundingClientRect();
+      const areaWidth = rect.width || 1;
+      const areaHeight = rect.height || 1;
+
+      for (const flower of flowersState) {
+        const fx = (flower.xPct / 100) * areaWidth;
+        const fy = (flower.yPct / 100) * areaHeight;
+        let nx = 0;
+        let ny = 0;
+        let power = 0;
+
+        if (pointerActive) {
+          const dx = fx - pointer.x;
+          const dy = fy - pointer.y;
+          const dist = Math.hypot(dx, dy) || 0.01;
+          const influence = 132;
+          const force = Math.max(0, 1 - dist / influence);
+          power = force * 4.5;
+          nx = dx / dist;
+          ny = dy / dist;
+        }
+
+        flower.pushX += nx * power;
+        flower.pushY += ny * power;
+        flower.pushX *= 0.9;
+        flower.pushY *= 0.9;
+
+        const t = timestamp * 0.001 * flower.speed + flower.phase;
+        const driftX = Math.sin(t) * flower.ampX;
+        const driftY = Math.cos(t * 1.16) * flower.ampY;
+        const wobble = Math.sin(t * 1.4) * 1.8;
+
+        flower.el.style.transform =
+          `translate(calc(-50% + ${flower.pushX + driftX}px), calc(-50% + ${flower.pushY + driftY}px)) rotate(${flower.baseRot + wobble}deg)`;
+      }
+
+      requestAnimationFrame(animateFlowers);
+    }
+
+    function openDialog(index) {
+      const meme = memeScenes[index % memeScenes.length];
+      dialogText.textContent = messages[index];
+      memeGif.src = meme.src;
+      memeGif.alt = meme.alt;
+      lastFocused = document.activeElement;
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+    }
+
+    function closeDialog() {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+    }
+
+    closeBtn.addEventListener("click", closeDialog);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closeDialog();
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && overlay.classList.contains("open")) closeDialog();
+    });
+
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+    meadowEl.addEventListener("pointerleave", () => {
+      pointerActive = false;
+    });
+    window.addEventListener("resize", layoutFlowers);
+
+    mountFlowers();
+    requestAnimationFrame(animateFlowers);
+  </script>
+</body>
+</html>
