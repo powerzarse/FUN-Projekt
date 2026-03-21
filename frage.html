@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wichtige Frage</title>
+  <style>
+    :root {
+      --bg-a: #fff7ef;
+      --bg-b: #ffd9e1;
+      --bg-c: #ffe9cc;
+      --petal-a: #ff89ab;
+      --petal-b: #ffb1c8;
+      --petal-c: #ffd3e1;
+      --center: #ffd166;
+      --ink: #3a2433;
+      --glass: rgba(255, 255, 255, 0.78);
+      --glass-border: rgba(255, 255, 255, 0.55);
+      --shadow: 0 22px 50px rgba(80, 28, 51, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+
+    body {
+      background:
+        radial-gradient(1200px 900px at 20% 10%, var(--bg-b) 0%, transparent 68%),
+        radial-gradient(900px 700px at 80% 80%, var(--bg-c) 0%, transparent 70%),
+        linear-gradient(135deg, var(--bg-a), #ffe7ef 50%, #fff2dc);
+      position: relative;
+    }
+
+    .garden {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .flower {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%) rotate(var(--rot));
+      transform-origin: center;
+      transition: transform 240ms ease, filter 240ms ease;
+      will-change: transform;
+      pointer-events: auto;
+      filter: drop-shadow(0 6px 10px rgba(164, 76, 113, 0.2));
+    }
+
+    .flower:hover {
+      filter: drop-shadow(0 10px 14px rgba(164, 76, 113, 0.28));
+    }
+
+    .flower.pink {
+      filter: drop-shadow(0 6px 10px rgba(164, 76, 113, 0.2));
+    }
+
+    .flower.pink:hover {
+      filter: drop-shadow(0 10px 14px rgba(164, 76, 113, 0.28));
+    }
+
+    .flower.blue {
+      filter: drop-shadow(0 6px 10px rgba(70, 116, 188, 0.22));
+    }
+
+    .flower.blue:hover {
+      filter: drop-shadow(0 10px 14px rgba(70, 116, 188, 0.3));
+    }
+
+    .flower.daisy {
+      filter: drop-shadow(0 6px 10px rgba(171, 139, 42, 0.24));
+    }
+
+    .flower.daisy:hover {
+      filter: drop-shadow(0 10px 14px rgba(171, 139, 42, 0.32));
+    }
+
+    .petal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40%;
+      height: 40%;
+      border-radius: 66% 66% 58% 58%;
+      transform-origin: 50% 105%;
+      transform: translate(-50%, var(--petal-offset, -92%)) rotate(var(--angle, 0deg));
+      background:
+        radial-gradient(120% 100% at 50% 20%, var(--petal-c), var(--petal-b) 52%, var(--petal-a));
+      box-shadow: inset 0 -2px 6px rgba(255, 255, 255, 0.35);
+    }
+
+    .flower.blue .petal {
+      width: 34%;
+      height: 47%;
+      border-radius: 58% 58% 30% 30%;
+      transform-origin: 50% 100%;
+      background:
+        radial-gradient(120% 100% at 50% 18%, #eaf4ff, #b7d2ff 54%, #7ea8f8);
+      box-shadow: inset 0 -2px 6px rgba(255, 255, 255, 0.5);
+    }
+
+    .flower.daisy .petal {
+      width: 24%;
+      height: 52%;
+      border-radius: 44% 44% 18% 18%;
+      transform-origin: 50% 102%;
+      background:
+        radial-gradient(120% 100% at 50% 14%, #fffada, #ffe78f 52%, #f7c844);
+      box-shadow: inset 0 -2px 5px rgba(255, 250, 210, 0.45);
+    }
+
+    .core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 28%;
+      height: 28%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 40% 35%, #fff3c0, #ffd166 55%, #f6b640 100%);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+    }
+
+    .flower.blue .core {
+      width: 23%;
+      height: 23%;
+      background:
+        radial-gradient(circle at 38% 34%, #f5fbff, #d6e8ff 55%, #8bb2f9 100%);
+      box-shadow: 0 0 0 2px rgba(239, 246, 255, 0.5);
+    }
+
+    .flower.daisy .core {
+      width: 31%;
+      height: 31%;
+      background:
+        radial-gradient(circle at 40% 35%, #fff6ba, #ffd85f 54%, #e7ad2f 100%);
+      box-shadow: 0 0 0 2px rgba(255, 243, 178, 0.45);
+    }
+
+    .stem {
+      position: absolute;
+      left: 50%;
+      top: 72%;
+      width: 7%;
+      height: 40%;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #74c889, #3f9e63);
+      opacity: 0.9;
+    }
+
+    .flower.blue .stem {
+      background: linear-gradient(180deg, #8dcfd8, #4c9ea8);
+    }
+
+    .flower.daisy .stem {
+      background: linear-gradient(180deg, #9fd27b, #5ea559);
+    }
+
+    .flower.burst .petal {
+      animation: petal-burst 580ms cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
+    }
+
+    .flower.regrow .petal {
+      animation: petal-regrow 10s cubic-bezier(0.25, 0.85, 0.3, 1) forwards;
+    }
+
+    .flower.burst .core {
+      animation: core-vanish 580ms ease-out forwards;
+    }
+
+    .flower.burst .stem {
+      animation: stem-vanish 580ms ease-out forwards;
+    }
+
+    .flower.regrow .core {
+      animation: core-regrow 10s cubic-bezier(0.22, 0.82, 0.28, 1) forwards;
+    }
+
+    .flower.regrow .stem {
+      animation: stem-regrow 10s cubic-bezier(0.22, 0.82, 0.28, 1) forwards;
+    }
+
+    @keyframes petal-burst {
+      0% {
+        transform: translate(-50%, var(--petal-offset)) rotate(var(--angle)) scale(1);
+        opacity: 1;
+      }
+      52% {
+        transform: translate(calc(-50% + var(--burst-x-mid)), calc(var(--petal-offset) + var(--burst-y-mid))) rotate(calc(var(--angle) + var(--spin-mid))) scale(0.62);
+        opacity: 0.76;
+      }
+      100% {
+        transform: translate(calc(-50% + var(--burst-x)), calc(var(--petal-offset) + var(--burst-y))) rotate(calc(var(--angle) + var(--spin))) scale(0.34);
+        opacity: 0;
+      }
+    }
+
+    @keyframes petal-regrow {
+      0% {
+        transform: translate(calc(-50% + var(--burst-x)), calc(var(--petal-offset) + var(--burst-y))) rotate(calc(var(--angle) + var(--spin))) scale(0.34);
+        opacity: 0;
+      }
+      35% {
+        opacity: 0.34;
+      }
+      100% {
+        transform: translate(-50%, var(--petal-offset)) rotate(var(--angle)) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes core-vanish {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(0.18);
+        opacity: 0;
+      }
+    }
+
+    @keyframes stem-vanish {
+      0% {
+        transform: translateX(-50%) scaleY(1);
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(-50%) scaleY(0.1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes core-regrow {
+      0% {
+        transform: translate(-50%, -50%) scale(0.18);
+        opacity: 0;
+      }
+      35% {
+        opacity: 0.35;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes stem-regrow {
+      0% {
+        transform: translateX(-50%) scaleY(0.1);
+        opacity: 0;
+      }
+      35% {
+        opacity: 0.35;
+      }
+      100% {
+        transform: translateX(-50%) scaleY(1);
+        opacity: 0.9;
+      }
+    }
+
+    .qa-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      padding: 24px;
+    }
+
+    .qa-card {
+      max-width: 680px;
+      width: min(92vw, 680px);
+      text-align: center;
+      padding: 24px 22px 26px;
+      border-radius: 22px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity 700ms ease, transform 700ms ease;
+      pointer-events: auto;
+    }
+
+    .qa-card.pre-show {
+      opacity: 0;
+      transform: translateY(0) scale(1);
+      pointer-events: none;
+    }
+
+    .qa-card.hide {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      pointer-events: none;
+    }
+
+    .qa-title {
+      margin: 0 0 10px;
+      font-size: clamp(1.3rem, 2.8vw, 2rem);
+      letter-spacing: 0.02em;
+    }
+
+    .qa-subtitle {
+      margin: 0 0 18px;
+      line-height: 1.5;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .qa-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      min-height: 54px;
+    }
+
+    .no-anchor {
+      display: inline-block;
+      width: 116px;
+      height: 44px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      height: 44px;
+      padding: 0 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 10px 18px rgba(78, 45, 71, 0.2);
+    }
+
+    .btn-yes {
+      color: #fff;
+      background: linear-gradient(135deg, #ff4f96, #ff7a68);
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    .btn-yes:hover {
+      transform: translateY(-2px);
+      filter: saturate(1.08);
+    }
+
+    .btn-no {
+      position: fixed;
+      left: -999px;
+      top: -999px;
+      z-index: 6;
+      color: #4a5772;
+      background: linear-gradient(135deg, #e6eefb, #d2e3ff);
+      transform: translate(-50%, -50%);
+      transition: left 240ms cubic-bezier(0.24, 0.86, 0.32, 1), top 240ms cubic-bezier(0.24, 0.86, 0.32, 1), filter 180ms ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn-no.escaping {
+      filter: brightness(1.06);
+    }
+
+    .success-card {
+      max-width: 680px;
+      width: min(92vw, 680px);
+      text-align: center;
+      padding: 24px 22px 26px;
+      border-radius: 22px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      transition: opacity 420ms ease, transform 420ms ease;
+      pointer-events: none;
+    }
+
+    .success-card.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .success-card p {
+      margin: 0 0 14px;
+      font-size: clamp(1rem, 2vw, 1.16rem);
+      line-height: 1.5;
+    }
+
+    .success-gif {
+      width: min(360px, 76vw);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 14px 30px rgba(42, 33, 69, 0.2);
+    }
+
+    .hint {
+      position: fixed;
+      z-index: 4;
+      left: 16px;
+      bottom: 16px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      backdrop-filter: blur(4px);
+      font-size: 0.85rem;
+      color: #64384d;
+      user-select: none;
+    }
+
+    @media (max-width: 700px) {
+      .qa-card,
+      .success-card {
+        padding: 20px 16px;
+      }
+
+      .hint {
+        font-size: 0.78rem;
+        left: 10px;
+        right: 10px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="garden" id="garden" aria-hidden="true"></main>
+
+  <section class="qa-wrap" aria-live="polite">
+    <article class="qa-card pre-show" id="questionCard">
+      <h1 class="qa-title">Kurze, wichtige Frage:</h1>
+      <p class="qa-subtitle">Willst du mit mir was Essen gehen? 🍰</p>
+      <div class="qa-actions">
+        <button class="btn btn-yes" id="yesBtn" type="button">Yes</button>
+        <span class="no-anchor" id="noAnchor" aria-hidden="true"></span>
+      </div>
+    </article>
+
+    <article class="success-card" id="successCard">
+      <h1 class="qa-title">Yessss! 🥳</h1>
+      <p> <strong>It’s a date!! 😍</strong> <br>Das war definitiv die richtige Entscheidung.</p>
+      <img class="success-gif" src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif" alt="Lustiges Jubel-GIF">
+    </article>
+  </section>
+
+  <button class="btn btn-no" id="noBtn" type="button" aria-label="No">No</button>
+  <div class="hint" id="hint">Tipp: Der No-Button ist etwas schüchtern.</div>
+
+  <script>
+    const garden = document.getElementById("garden");
+    const questionCard = document.getElementById("questionCard");
+    const successCard = document.getElementById("successCard");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const noAnchor = document.getElementById("noAnchor");
+    const hint = document.getElementById("hint");
+
+    const flowerCount = window.innerWidth < 700 ? 29 : 45;
+    const flowers = [];
+    const pointer = { x: 0, y: 0 };
+    let pointerActive = false;
+    let yesSelected = false;
+    let questionVisible = false;
+    let noEscapeArmed = false;
+    const NO_ESCAPE_DISTANCE = 95;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function setNoButtonPosition(x, y) {
+      const safeX = clamp(x, 58, window.innerWidth - 58);
+      const safeY = clamp(y, 40, window.innerHeight - 36);
+      noBtn.style.left = `${safeX}px`;
+      noBtn.style.top = `${safeY}px`;
+    }
+
+    function placeNoNearAnchor() {
+      const anchorRect = noAnchor.getBoundingClientRect();
+      const x = anchorRect.left + anchorRect.width / 2;
+      const y = anchorRect.top + anchorRect.height / 2;
+      setNoButtonPosition(x, y);
+    }
+
+    function moveNoButtonAway(fromX, fromY) {
+      if (yesSelected || !questionVisible || !noEscapeArmed) return;
+
+      const cardRect = questionCard.getBoundingClientRect();
+      let targetX = parseFloat(noBtn.style.left) || window.innerWidth * 0.5;
+      let targetY = parseFloat(noBtn.style.top) || window.innerHeight * 0.5;
+
+      for (let i = 0; i < 40; i++) {
+        const candidateX = rand(60, window.innerWidth - 60);
+        const candidateY = rand(44, window.innerHeight - 44);
+        const farFromPointer = Math.hypot(candidateX - fromX, candidateY - fromY) > 160;
+        const outsideCard =
+          candidateX < cardRect.left - 24 ||
+          candidateX > cardRect.right + 24 ||
+          candidateY < cardRect.top - 24 ||
+          candidateY > cardRect.bottom + 24;
+
+        if (farFromPointer && outsideCard) {
+          targetX = candidateX;
+          targetY = candidateY;
+          break;
+        }
+      }
+
+      noBtn.classList.add("escaping");
+      setNoButtonPosition(targetX, targetY);
+      setTimeout(() => noBtn.classList.remove("escaping"), 130);
+    }
+
+    function createFlowerSlots(count) {
+      const aspect = window.innerWidth / Math.max(window.innerHeight, 1);
+      const cols = Math.ceil(Math.sqrt(count * aspect));
+      const rows = Math.ceil(count / cols);
+      const slots = [];
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const jitterX = (Math.random() - 0.5) * 0.56;
+          const jitterY = (Math.random() - 0.5) * 0.56;
+          const x = clamp(((col + 0.5 + jitterX) / cols) * 100, 2, 98);
+          const y = clamp(((row + 0.5 + jitterY) / rows) * 100, 2, 98);
+          slots.push({ x, y });
+        }
+      }
+
+      for (let i = slots.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [slots[i], slots[j]] = [slots[j], slots[i]];
+      }
+
+      return slots.slice(0, count);
+    }
+
+    function makeFlower(slot) {
+      const flower = document.createElement("div");
+      flower.className = "flower";
+
+      const picker = Math.random();
+      const flowerType = picker < 0.45 ? "pink" : picker < 0.7 ? "blue" : "daisy";
+      const size =
+        flowerType === "blue"
+          ? 78 + Math.random() * 68
+          : flowerType === "daisy"
+            ? 72 + Math.random() * 64
+            : 68 + Math.random() * 74;
+      const x = slot.x;
+      const y = slot.y;
+      const rot = Math.floor(Math.random() * 360);
+      const petals = flowerType === "blue" ? 6 : flowerType === "daisy" ? 12 : 8;
+      const petalOffset = flowerType === "blue" ? -88 : flowerType === "daisy" ? -90 : -92;
+
+      flower.classList.add(flowerType);
+
+      flower.style.setProperty("--size", `${size}px`);
+      flower.style.setProperty("--x", `${x}%`);
+      flower.style.setProperty("--y", `${y}%`);
+      flower.style.setProperty("--rot", `${rot}deg`);
+      flower.style.setProperty("--petal-offset", `${petalOffset}%`);
+
+      for (let i = 0; i < petals; i++) {
+        const petal = document.createElement("span");
+        petal.className = "petal";
+        const angle = (360 / petals) * i;
+        const spin = (Math.random() * 44 + 18) * (Math.random() > 0.5 ? 1 : -1);
+        const angleRad = (angle * Math.PI) / 180;
+        const burstDistance = size * (flowerType === "daisy" ? 0.36 : 0.32) + Math.random() * 9;
+        const burstX = Math.cos(angleRad) * burstDistance + (Math.random() - 0.5) * 12;
+        const burstY = Math.sin(angleRad) * burstDistance + (Math.random() - 0.5) * 12;
+        const burstXMid = burstX * 0.58;
+        const burstYMid = burstY * 0.58;
+        const spinMid = spin * 0.55;
+        petal.style.setProperty("--angle", `${angle}deg`);
+        petal.style.setProperty("--spin", `${spin}deg`);
+        petal.style.setProperty("--spin-mid", `${spinMid}deg`);
+        petal.style.setProperty("--burst-x", `${burstX.toFixed(2)}px`);
+        petal.style.setProperty("--burst-y", `${burstY.toFixed(2)}px`);
+        petal.style.setProperty("--burst-x-mid", `${burstXMid.toFixed(2)}px`);
+        petal.style.setProperty("--burst-y-mid", `${burstYMid.toFixed(2)}px`);
+        flower.appendChild(petal);
+      }
+
+      const stem = document.createElement("span");
+      stem.className = "stem";
+      flower.appendChild(stem);
+
+      const core = document.createElement("span");
+      core.className = "core";
+      flower.appendChild(core);
+
+      garden.appendChild(flower);
+
+      const flowerData = {
+        el: flower,
+        x: (x / 100) * window.innerWidth,
+        y: (y / 100) * window.innerHeight,
+        baseRot: rot,
+        pushX: 0,
+        pushY: 0,
+        isRegrowing: false
+      };
+
+      flower.addEventListener("click", () => {
+        if (flowerData.isRegrowing) return;
+
+        flowerData.isRegrowing = true;
+        flower.classList.remove("regrow");
+        flower.classList.add("burst");
+
+        setTimeout(() => {
+          flower.classList.remove("burst");
+          flower.classList.add("regrow");
+        }, 580);
+
+        setTimeout(() => {
+          flower.classList.remove("regrow");
+          flowerData.isRegrowing = false;
+        }, 10580);
+      });
+
+      return flowerData;
+    }
+
+    function setupFlowers() {
+      const slots = createFlowerSlots(flowerCount);
+      for (const slot of slots) {
+        flowers.push(makeFlower(slot));
+      }
+    }
+
+    function updateFlowers() {
+      for (const f of flowers) {
+        let power = 0;
+        let nx = 0;
+        let ny = 0;
+
+        if (pointerActive) {
+          const dx = f.x - pointer.x;
+          const dy = f.y - pointer.y;
+          const dist = Math.hypot(dx, dy) || 0.01;
+          const maxDist = 170;
+          const force = Math.max(0, 1 - dist / maxDist);
+          power = force * 18;
+          nx = dx / dist;
+          ny = dy / dist;
+        }
+
+        f.pushX += nx * power;
+        f.pushY += ny * power;
+        f.pushX *= 0.82;
+        f.pushY *= 0.82;
+
+        const twist = (f.pushX + f.pushY) * 0.28;
+        f.el.style.transform = `translate(calc(-50% + ${f.pushX}px), calc(-50% + ${f.pushY}px)) rotate(${f.baseRot + twist}deg)`;
+      }
+
+      requestAnimationFrame(updateFlowers);
+    }
+
+    function onMove(event) {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointerActive = true;
+
+      if (!yesSelected && questionVisible) {
+        const rect = noBtn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dist = Math.hypot(pointer.x - cx, pointer.y - cy);
+        if (dist < NO_ESCAPE_DISTANCE) {
+          moveNoButtonAway(pointer.x, pointer.y);
+        }
+      }
+    }
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerleave", () => {
+      pointerActive = false;
+    });
+
+    window.addEventListener("resize", () => {
+      for (const f of flowers) {
+        const xPercent = parseFloat(f.el.style.getPropertyValue("--x"));
+        const yPercent = parseFloat(f.el.style.getPropertyValue("--y"));
+        f.x = (xPercent / 100) * window.innerWidth;
+        f.y = (yPercent / 100) * window.innerHeight;
+      }
+
+      if (!yesSelected) {
+        const currentX = parseFloat(noBtn.style.left);
+        const currentY = parseFloat(noBtn.style.top);
+        if (!Number.isNaN(currentX) && !Number.isNaN(currentY) && currentX > 0 && currentY > 0) {
+          setNoButtonPosition(currentX, currentY);
+        } else {
+          placeNoNearAnchor();
+        }
+      }
+    });
+
+    setupFlowers();
+    updateFlowers();
+    requestAnimationFrame(placeNoNearAnchor);
+    setTimeout(placeNoNearAnchor, 120);
+    setTimeout(() => {
+      questionCard.classList.remove("pre-show");
+      placeNoNearAnchor();
+      requestAnimationFrame(placeNoNearAnchor);
+      setTimeout(placeNoNearAnchor, 160);
+      noBtn.style.opacity = "1";
+      noBtn.style.pointerEvents = "auto";
+      questionVisible = true;
+      setTimeout(() => {
+        noEscapeArmed = true;
+      }, 420);
+    }, 5000);
+
+    noBtn.addEventListener("pointerenter", (event) => {
+      moveNoButtonAway(event.clientX, event.clientY);
+    });
+
+    noBtn.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      moveNoButtonAway(event.clientX, event.clientY);
+    });
+
+    noBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      moveNoButtonAway(pointer.x || window.innerWidth * 0.5, pointer.y || window.innerHeight * 0.5);
+    });
+
+    yesBtn.addEventListener("click", () => {
+      yesSelected = true;
+      questionCard.classList.add("hide");
+      successCard.classList.add("show");
+      noBtn.style.opacity = "0";
+      noBtn.style.pointerEvents = "none";
+      hint.textContent = "Mission erfolgreich: YES gedrückt.";
+    });
+  </script>
+</body>
+</html>
